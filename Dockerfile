@@ -1,7 +1,10 @@
 FROM hashicorp/terraform
 
-RUN apk update \
-	&& apk --no-cache add bash curl jq sudo
+ENV TERRAGRUNT_VERSION=0.14.7
 
-RUN curl -o /usr/local/bin/terragrunt -s https://api.github.com/repos/gruntwork-io/terragrunt/releases/latest | jq '.assets|.[]|select(.name=="terragrunt_linux_amd64")|.browser_download_url' \
-    && sudo chmod +x /usr/local/bin/terragrunt
+RUN curl -sL https://github.com/gruntwork-io/terragrunt/releases/download/v$TERRAGRUNT_VERSION/terragrunt_linux_amd64 -o /bin/terragrunt && chmod +x /bin/terragrunt
+
+COPY docker-entrypoint.sh /
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["terragrunt"]
